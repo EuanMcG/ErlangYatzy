@@ -22,6 +22,9 @@
 %% Bonus is for things like scoring greater than 63 points in the section.
 -spec new() -> sheet().
 new() ->
+    % better to only list the derived slots (sum_of_uppers,...) and leave the ones to be
+    % filled out of the map - see comment below.
+    % And I'd initialise those to 0, not empty.
     #{
         ones => empty,
         twos => empty,
@@ -44,12 +47,25 @@ new() ->
     }.
 
 fill(Field, List, Sheet) ->
+    % I'd go straight for the kill:
+    % case maps:get(Field, Sheet, empty) of
+    %     empty ->
+    %         blah;
+    %     _ ->
+    %         already_filled
+    % end.
+    % maps:get/3 will save you from having to put in all those empty fields in the
+    % starting map.
     case already_filled(Field, Sheet) of
         false ->
             already_filled;
         true ->
-            maps:put(Field, List, Sheet),
+            maps:put(Field, List, Sheet), % this one has no effect since you don't pick
+            % up the map being returned.
             {ok, maps:put(Field, get_score(Field, List), Sheet)}
+            % I'd lean to do this instead:
+            % {ok, Sheet#{ Field => get_score(Field, List) }}
+            % It feels a bit more Erlangy in some sense.
     end.
 
 already_filled(Field, Sheet) ->
@@ -74,6 +90,12 @@ get_score(fives, List) ->
 get_score(sixes, List) ->
     yatzy_score:upper(6, List);
 get_score(one_pair, List) ->
+    % here you can actually go:
+    % get_score(Lower, List) ->
+    %     yatzy:Lower(List).
+    % and avoid all the boilerplate.
+    % You may also provied a yatzy_score:calc(Field, List) and have that do the
+    % dispatching to the individual scoring functions.
     yatzy_score:one_pair(List);
 get_score(two_pair, List) ->
     yatzy_score:two_pair(List);
