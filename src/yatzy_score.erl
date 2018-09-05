@@ -23,6 +23,15 @@ upper(IntOfChoice, ListOfRoll) ->
     count(IntOfChoice, ListOfRoll, 0).
 
 -spec one_pair(list()) -> integer().
+%% need more or a pattern matching approach
+%% one_pair(List) ->
+%%     case lists:sort(List) of
+%%         [_,_,_,X,X] -> 
+%%             2 * X;
+%%         [_,_,X,X,_] ->
+%%             2 * X;
+%%             ... and so on
+%% This goes for all solutions.
 one_pair(List) ->
     List1 = get_your_list(2, List),
     lists:max(List1) * count(lists:max(List1), List, 0).
@@ -47,6 +56,7 @@ small_straight([1, 2, 3, 4, _]) ->
 big_straight([_, 2, 3, 4, 5]) ->
     14.
 
+%% Yes!! More patterns like this!   
 -spec full_house(list()) -> integer().
 full_house([X, X, X, Y, Y]) ->
     (X * 3) + (Y * 2).
